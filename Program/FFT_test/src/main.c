@@ -1,11 +1,21 @@
-#include "fft__.h"
+include "fft__.h"
 #include "stm8_hd44780.h"
-#include "main.h"
 #include "stm8s_it.h"
 #include "stm8s.h"
 
-#define BANDS           20        // number of columns on LCD
-#define TIM4_PERIOD     124         // sets sampling rate (16 MHz / 16 / 124(+1) ˜ 8 kHz) - Nyquist frequency
+
+/*
+ *  FFT implementation on lcd display for STM8, that allows user to switch between three predefined bar styles, 
+ *	last set configuration is saved to flash and loaded at start.
+ *  V1.0.0 - too flickery, needs fix
+ *  tested on stm8s005K6T6C chip
+ *  Created on: 28. 6. 2026
+ *  Author: Adam Fucik
+ *  
+ */
+
+#define BANDS           20   // number of columns on LCD
+#define TIM4_PERIOD     124         // sets sampling rate (16 MHz / 16 / 124(+1) Ëœ 8 kHz)
 #define SAMP_FREQ  ((float)16000000 / 16 / (TIM4_PERIOD + 1))
 #define CHANNEL         ADC1_CHANNEL_0
 //basically SNR
@@ -16,9 +26,7 @@
 
 #define VISUAL_BTN GPIOE, GPIO_PIN_5 //switching between visuals
 #define MODE_ADDR 0x4000 //saving mode address
-//------------------------------------------------------------------------------
-// Globals
-//------------------------------------------------------------------------------
+
 uint8_t  isr_flag = 0;     // sampling flag
 uint32_t count; 
 const uint16_t sw_delay=500;//ms delay switching
@@ -30,7 +38,7 @@ uint16_t bandFft[BANDS];          // averaged magnitudes per band
 
 uint8_t m, last_m;
 uint8_t i;
-// Custom characters (same as Arduino)
+
 const uint8_t characters1[8][8] = {//style 1 - spaces and filled
   {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0E},
   {0x00,0x00,0x00,0x00,0x00,0x00,0x0E,0x0E},
@@ -64,9 +72,6 @@ const uint8_t characters3[8][8] = {//style 3 - hollow parallel
   {0x0A,0x0A,0x0A,0x0A,0x0A,0x0A,0x0A,0x0A}
 };
 
-//------------------------------------------------------------------------------
-// Prototypes
-//------------------------------------------------------------------------------
 void capture_wave(uint16_t cnt);//wave capture
 void calcAvgbyBand(int16_t *ptrData, uint16_t bufSize, uint16_t *ptrBand);
 void normalizeBand(uint16_t *ptrBand, uint16_t noise, uint16_t max_input, uint8_t max_output, uint8_t gain);
@@ -79,9 +84,7 @@ void Init_GPIO  (void);
 void Init_ADC   (uint8_t channel);
 void TIM3_Config(void);
 void TIM4_Config(void);
-//------------------------------------------------------------------------------
-// MAIN
-//------------------------------------------------------------------------------
+
 void main(void)
 {
     Init_CLK();
@@ -148,9 +151,7 @@ void main(void)
 		
 }
 
-//------------------------------------------------------------------------------
-// Average FFT bins into logarithmic bands (ported from Arduino)
-//------------------------------------------------------------------------------
+//log averaging
 void calcAvgbyBand(int16_t *ptrData, uint16_t bufSize, uint16_t *ptrBand)
 {
     float average = 0;
@@ -160,7 +161,6 @@ void calcAvgbyBand(int16_t *ptrData, uint16_t bufSize, uint16_t *ptrBand)
     uint8_t j = 0;
     uint16_t i;
 
-    // Calculate the highest usable frequency (Nyquist or last bin)
     float max_freq = ((float)(bufSize - 1) * SAMP_FREQ) / N_SAMPLE;
 
     float freqbase = max_freq;
@@ -190,9 +190,7 @@ void calcAvgbyBand(int16_t *ptrData, uint16_t bufSize, uint16_t *ptrBand)
         ptrBand[j] = (uint16_t)average;
     }
 }
-//------------------------------------------------------------------------------
-// Normalize and scale to 0..max_output (ported from Arduino)
-//------------------------------------------------------------------------------
+//linear normalization
 void normalizeBand(uint16_t *ptrBand, uint16_t noise, uint16_t max_input, uint8_t max_output, uint8_t gain)
 {
     uint16_t aux;
@@ -219,9 +217,7 @@ void normalizeBand(uint16_t *ptrBand, uint16_t noise, uint16_t max_input, uint8_
     }
 }
 
-//------------------------------------------------------------------------------
-// Draw bars using custom characters (ported from Arduino)
-//------------------------------------------------------------------------------
+//bar draw
 void set_level(uint16_t *ptr)
 {
     uint8_t a, n, x, y;
@@ -247,9 +243,7 @@ void set_level(uint16_t *ptr)
     }
 }
 
-//------------------------------------------------------------------------------
-// ADC capture routine (timer driven) – unchanged
-//------------------------------------------------------------------------------
+//ADC sets sampling
 void capture_wave(uint16_t cnt)
 {
     u8  i   = 0;
@@ -279,9 +273,7 @@ void capture_wave(uint16_t cnt)
 }
 
 
-//------------------------------------------------------------------------------
-// TIM4 interrupt – sampling trigger
-//------------------------------------------------------------------------------
+//timers
 void TIM4_Config(void)
 {
     TIM4_TimeBaseInit(TIM4_PRESCALER_16, TIM4_PERIOD);
@@ -312,7 +304,7 @@ void Init_CLK(void)
 }
 
 //------------------------------------------------------------------------------
-// GPIO – set all pins as inputs (prevent floating)
+// GPIO â€“ set all pins as inputs (prevent floating)
 //------------------------------------------------------------------------------
 void Init_GPIO(void)
 {
