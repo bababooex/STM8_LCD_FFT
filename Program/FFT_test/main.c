@@ -7,7 +7,7 @@
 /*
  *  FFT implementation on lcd display for STM8, that allows user to switch between three predefined bar styles, 
  *	last set configuration is saved to flash and loaded at start.
- *
+ *	V 1.0.0 - suffers from flickering because of refresh speed, can be partially fixed adjusting contrast
  *  tested on stm8s005K6T6C chip
  *  Created on: 28. 6. 2026
  *  Author: Adam Fucik
@@ -303,9 +303,7 @@ void Init_CLK(void)
     CLK_ClockSwitchConfig(CLK_SWITCHMODE_AUTO, CLK_SOURCE_HSI, DISABLE, CLK_CURRENTCLOCKSTATE_DISABLE);
 }
 
-//------------------------------------------------------------------------------
-// GPIO – set all pins as inputs (prevent floating)
-//------------------------------------------------------------------------------
+//gpio set
 void Init_GPIO(void)
 {
     GPIO_DeInit(GPIOA);
