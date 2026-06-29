@@ -109,7 +109,7 @@ void main(void)
 										lcd_store_symbol(i, (uint8_t*)characters1[i]);
 								}
 								lcd_command(LCD_DISPLAY_CLEAR);
-								lcd_puts("250Hz  STYLE 1  4kHz");
+								lcd_puts("100Hz  STYLE 1  4kHz");
 								memory_save_m();
 								last_m = m;
 								delay(500);
@@ -119,7 +119,7 @@ void main(void)
 										lcd_store_symbol(i, (uint8_t*)characters2[i]);
 								}
 								lcd_command(LCD_DISPLAY_CLEAR);
-								lcd_puts("250Hz  STYLE 2  4kHz");
+								lcd_puts("100Hz  STYLE 2  4kHz");
 								memory_save_m();
 								last_m = m;
 								delay(500);
@@ -129,7 +129,7 @@ void main(void)
 										lcd_store_symbol(i, (uint8_t*)characters3[i]);
 								}
 								lcd_command(LCD_DISPLAY_CLEAR);
-								lcd_puts("250Hz  STYLE 3  4kHz");
+								lcd_puts("100Hz  STYLE 3  4kHz");
 								memory_save_m();
 								last_m = m;
 								delay(500);
