@@ -201,14 +201,8 @@ void normalizeBand(uint16_t *ptrBand, uint16_t noise, uint16_t max_input, uint8_
         
         if (aux > noise)
         {
-            // Remove noise floor, then amplify
-            aux = (aux - noise) * gain;
-            
-            // Clamp to max_input
-            if (aux > max_input) aux = max_input;
-            
-            // Scale linearly to 0..max_output
-            ptrBand[i] = (uint16_t)((uint32_t)aux * max_output / max_input);
+             aux = aux > max_input? max_input : aux - noise;
+      		 ptrBand[i] = (aux * max_output) / max_input;
         }
         else
         {
