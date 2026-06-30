@@ -3,8 +3,6 @@ STM8 example code for FFT on LCD display, has a lot of settings in main code for
 - connection goes like - audio jack -> amplifier with gain setting and biasing -> LPF -> adc pin
   
 This is not very precise device, I made it only for fun! I also recommend filtered voltage source, like LM7805, of course VDDA and VSSA are connected to power pins.
-# Images
-Will add soon...
 # Credits
 - https://github.com/Lendlav/stm8s103-FFT-spectrum - stm fft implementation by Lendlav
 - https://github.com/ivanmorenoj/fft_esp32_lcd - I used averaging, displaying and normalization, original by Ivan Moreno
